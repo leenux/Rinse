@@ -18,6 +18,7 @@ Rinse.L = {
     ["Abolish Disease"] = 1,
     ["Remove Lesser Curse"] = 1,
     ["Devour Magic"] = 1,
+    ["Nature's Reach"] = 1,
     ["Curse of Recklessness"] = 1,
     ["Delusions of Jin'do"] = 1,
     ["Dread of Outland"] = 1,
@@ -166,6 +167,7 @@ if locale == "zhCN" then
     Rinse.L["Cure Disease"] = "祛病术"
     Rinse.L["Remove Lesser Curse"] = "解除次级诅咒"
     Rinse.L["Devour Magic"] = "吞噬魔法"
+    Rinse.L["Nature's Reach"] = "自然延伸"
     -- DefaultBlacklist
     Rinse.L["Curse of Recklessness"] = "鲁莽诅咒"
     Rinse.L["Delusions of Jin'do"] = "金度的欺骗"

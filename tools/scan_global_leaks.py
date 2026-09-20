@@ -30,6 +30,7 @@ WOW_AND_ADDON_GLOBALS = {
     'CheckInteractDistance', 'GetTime', 'GetSpellCooldown', 'CastSpellByName',
     'TargetUnit', 'TargetLastTarget', 'AssistUnit', 'GetCVar', 'SetCVar',
     'GetPlayerBuff', 'GetPlayerBuffTexture', 'GetNumSpellTabs', 'GetSpellTabInfo',
+    'GetNumTalentTabs', 'GetTalentInfo', 'GetNumTalents',
     'GetSpellName', 'GetRaidRosterInfo', 'GetCursorPosition', 'MouseIsOver',
     'SendAddonMessage', 'StaticPopup_Show', 'StaticPopupDialogs', 'FauxScrollFrame_GetOffset',
     'FauxScrollFrame_Update', 'GetAddOnMetadata', 'UIDROPDOWNMENU_MENU_VALUE',

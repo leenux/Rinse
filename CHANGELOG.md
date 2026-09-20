@@ -6,6 +6,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.8.2] - 2026-09-20
+
+### 🌿 Class & Talent Enhancements
+* **Druid Nature's Reach Talent Support**: Added dynamic talent scanning for the Druid talent *Nature's Reach* (Balance tree). Druids specced into Nature's Reach now correctly gain extended dispel range (+10% for Rank 1 / 33 yards, +20% for Rank 2 / 36 yards) on *Remove Curse*, *Abolish Poison*, and *Cure Poison*.
+* **Dynamic Range Checking in CanCast**: Replaced hardcoded 30-yard calculations with dynamic spell range resolution across all supported range engines:
+  - **UnitXP SP3**: Evaluates `UnitXP("distanceBetween", "player", unit) < maxRange` (e.g. `< 36` for 2/2 Nature's Reach).
+  - **SuperWoW 3D Vector**: Dynamically computes `(maxRange + 3)^2` (e.g. `39^2 = 1521` for 36 yards; `33^2 = 1089` for base 30 yards), taking model combat reach into account.
+  - **Spell Tooltip Scanning**: Inspects `RinseScanTooltip` for explicit range text to accommodate server-custom ranges or item-based range extensions.
+* **Talent Event Registration**: Registered `CHARACTER_POINTS_CHANGED` and `PLAYER_ENTERING_WORLD` so talent allocations or respecs take effect immediately without requiring a UI reload.
+
 ## [2.8.1] - 2026-09-04
 
 ### 🛡️ Critical Fixes & Stability

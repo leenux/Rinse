@@ -42,6 +42,8 @@ local state = {
 	lastButton = nil,
 	versionsCheckTimer = nil,
 	AddonVersions = nil,
+	spellRanges = {},
+	druidReachMultiplier = 1.0,
 }
 
 -- Bindings
@@ -372,11 +374,22 @@ local function HasShadowform()
 	return false
 end
 
+local function GetSpellMaxRange(spell)
+	if spell and state.spellRanges and state.spellRanges[spell] then
+		return state.spellRanges[spell]
+	end
+	if playerClass == "DRUID" then
+		return 30 * (state.druidReachMultiplier or 1.0)
+	end
+	return 30
+end
+
 local function CanCast(unit, spell)
 	if not unit then return false end
 	if UnitIsUnit("player", unit) then return true end
 
 	local inRange
+	local maxRange = GetSpellMaxRange(spell)
 
 	if UnitIsFriend("player", unit) and not UnitCanAttack("player", unit) then
 		-- https://gitea.com/avitasia/nampower/issues/56
@@ -385,14 +398,15 @@ local function CanCast(unit, spell)
 		-- end
 		if unitxp and type(UnitXP) == "function" then
 			-- Accounts for true reach. A tauren can dispell a male tauren at 38y!
-			inRange = UnitXP("distanceBetween", "player", unit) < 30
+			inRange = UnitXP("distanceBetween", "player", unit) < maxRange
 		elseif superwow and type(UnitPosition) == "function" then
 			local myX, myY, myZ = UnitPosition("player")
 			local uX, uY, uZ = UnitPosition(unit)
 			if myX and uX then
 				local dx, dy, dz = uX - myX, uY - myY, uZ - myZ
-				-- sqrt(1089) == 33, smallest max dispell range not accounting for true melee reach
-				inRange = ((dx * dx) + (dy * dy) + (dz * dz)) <= 1089
+				-- (maxRange + 3)^2 accounts for base reach plus model combat reach
+				local maxDist = maxRange + 3
+				inRange = ((dx * dx) + (dy * dy) + (dz * dz)) <= (maxDist * maxDist)
 			else
 				inRange = CheckInteractDistance(unit, 4)
 			end
@@ -826,10 +840,30 @@ end
 
 local AllSpells = {}
 
+local function UpdateTalentModifications()
+	state.druidReachMultiplier = 1.0
+	if playerClass == "DRUID" and type(GetNumTalentTabs) == "function" and type(GetTalentInfo) == "function" then
+		for tab = 1, GetNumTalentTabs() do
+			local numTalents = GetNumTalents(tab) or 0
+			for t = 1, numTalents do
+				local name, icon, tier, col, rank = GetTalentInfo(tab, t)
+				if (name and (name == L["Nature's Reach"] or name == "Nature's Reach"))
+				   or (icon and strfind(strlower(icon), "spell_nature_naturetouchgrow")) then
+					if rank and rank > 0 then
+						state.druidReachMultiplier = 1.0 + (rank * 0.10)
+					end
+					break
+				end
+			end
+		end
+	end
+end
+
 local function UpdateSpells()
 	if not Spells[playerClass] then
 		return
 	end
+	UpdateTalentModifications()
 	-- Gather all spells and their spellBookID
 	wipelist(AllSpells)
 	for tab = 1, GetNumSpellTabs() do
@@ -857,6 +891,44 @@ local function UpdateSpells()
 					break
 				end
 			end
+		end
+	end
+	-- Calculate spell ranges accounting for talents and tooltips
+	wipelist(state.spellRanges)
+	for dispelType, spells in pairs(Spells[playerClass]) do
+		for i = 1, getn(spells) do
+			local spellName = spells[i]
+			local baseRange = 30
+			if playerClass == "DRUID" then
+				if spellName == L["Remove Curse"] or spellName == L["Abolish Poison"] or spellName == L["Cure Poison"] then
+					baseRange = 30 * state.druidReachMultiplier
+				end
+			end
+			local spellSlot = UsableSpellBookIDs[spellName]
+			if spellSlot and RinseScanTooltip then
+				RinseScanTooltip:ClearLines()
+				RinseScanTooltip:SetSpell(spellSlot, bookType)
+				for line = 1, 3 do
+					local textObj = _G["RinseScanTooltipTextRight"..line]
+					local text = textObj and textObj:GetText()
+					if text then
+						local _, _, yards = strfind(text, "(%d+)%s*yd")
+						if not yards then
+							_, _, yards = strfind(text, "(%d+)%s*码")
+						end
+						if not yards then
+							_, _, yards = strfind(text, "(%d+)%s*m")
+						end
+						if yards then
+							local y = tonumber(yards)
+							if y and y > baseRange then
+								baseRange = y
+							end
+						end
+					end
+				end
+			end
+			state.spellRanges[spellName] = baseRange
 		end
 	end
 end
@@ -1148,6 +1220,8 @@ function RinseFrame_OnLoad()
 	RinseFrame:RegisterEvent("SPELLS_CHANGED")
 	RinseFrame:RegisterEvent("CHAT_MSG_ADDON")
 	RinseFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
+	RinseFrame:RegisterEvent("CHARACTER_POINTS_CHANGED")
+	RinseFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 	if type(GetNampowerVersion) == "function" then
 		-- Announce queued decurses
 		RinseFrame:RegisterEvent("SPELL_QUEUE_EVENT")
@@ -1346,7 +1420,7 @@ function RinseFrame_OnEvent()
 	elseif event == "RAID_ROSTER_UPDATE" or event == "PARTY_MEMBERS_CHANGED" then
 		state.needUpdatePrio = true
 		state.prioTimer = 2
-	elseif event == "SPELLS_CHANGED" then
+	elseif event == "SPELLS_CHANGED" or event == "CHARACTER_POINTS_CHANGED" or event == "PLAYER_ENTERING_WORLD" then
 		UpdateSpells()
 	elseif event == "PLAYER_AURAS_CHANGED" then
 		state.shadowform = HasShadowform()

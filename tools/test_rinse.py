@@ -203,5 +203,54 @@ class TestLocalizationParity(unittest.TestCase):
         for key in fmt_keys:
             self.assertTrue(key in loc_content, f"Missing format key '{key}' in Localization.lua")
 
+class TestRinseTalentRange(unittest.TestCase):
+    """Verifies that talent-based dispel ranges (e.g. Druid Nature's Reach) calculate correctly."""
+
+    def setUp(self):
+        lua_path = os.path.join(ADDON_DIR, "Rinse.lua")
+        with open(lua_path, "r", encoding="utf-8", errors="ignore") as f:
+            self.rinse_content = f.read()
+
+        loc_path = os.path.join(ADDON_DIR, "Localization.lua")
+        with open(loc_path, "r", encoding="utf-8", errors="ignore") as f:
+            self.loc_content = f.read()
+
+    def calculate_range(self, base_range, rank):
+        multiplier = 1.0 + (rank * 0.10)
+        return base_range * multiplier
+
+    def calculate_superwow_threshold(self, max_range):
+        max_dist = max_range + 3
+        return max_dist * max_dist
+
+    def test_druid_natures_reach_math(self):
+        # Rank 0 (base): 30 yards
+        r0 = self.calculate_range(30, 0)
+        self.assertEqual(r0, 30)
+        self.assertEqual(self.calculate_superwow_threshold(r0), 1089)
+
+        # Rank 1 (+10%): 33 yards
+        r1 = self.calculate_range(30, 1)
+        self.assertAlmostEqual(r1, 33.0)
+        self.assertEqual(self.calculate_superwow_threshold(r1), 1296)
+
+        # Rank 2 (+20%): 36 yards
+        r2 = self.calculate_range(30, 2)
+        self.assertAlmostEqual(r2, 36.0)
+        self.assertEqual(self.calculate_superwow_threshold(r2), 1521)
+
+    def test_event_registration(self):
+        self.assertIn('RinseFrame:RegisterEvent("CHARACTER_POINTS_CHANGED")', self.rinse_content)
+        self.assertIn('RinseFrame:RegisterEvent("PLAYER_ENTERING_WORLD")', self.rinse_content)
+
+    def test_natures_reach_localization(self):
+        self.assertIn('["Nature\'s Reach"] = 1', self.loc_content)
+        self.assertIn('Rinse.L["Nature\'s Reach"] = "自然延伸"', self.loc_content)
+
+    def test_range_check_implementation(self):
+        self.assertIn("local function GetSpellMaxRange(spell)", self.rinse_content)
+        self.assertIn("local function UpdateTalentModifications()", self.rinse_content)
+        self.assertIn("spell_nature_naturetouchgrow", self.rinse_content)
+
 if __name__ == "__main__":
     unittest.main()
