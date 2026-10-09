@@ -963,10 +963,26 @@ function Rinse_ToggleSound()
 	RINSE_CONFIG.SOUND = not RINSE_CONFIG.SOUND
 end
 
-function Rinse_ToggleLock()
-	RINSE_CONFIG.LOCK = not RINSE_CONFIG.LOCK
+-- When header/UI is hidden, force lock so the transparent frame lets mouse clicks through.
+local function ApplyLock()
+	if not RINSE_CONFIG.SHOW_HEADER then
+		RINSE_CONFIG.LOCK = true
+	end
 	RinseFrame:SetMovable(not RINSE_CONFIG.LOCK)
 	RinseFrame:EnableMouse(not RINSE_CONFIG.LOCK)
+	if RinseOptionsFrameLock then
+		RinseOptionsFrameLock:SetChecked(RINSE_CONFIG.LOCK)
+	end
+end
+
+function Rinse_ToggleLock()
+	if not RINSE_CONFIG.SHOW_HEADER then
+		RINSE_CONFIG.LOCK = true
+		ApplyLock()
+		return
+	end
+	RINSE_CONFIG.LOCK = not RINSE_CONFIG.LOCK
+	ApplyLock()
 end
 
 local function UpdateBackdrop()
@@ -1104,6 +1120,7 @@ local function UpdateHeader()
 		RinseDebuffsFrame:SetPoint("TOP", RinseFrame, "TOP", 0, -5)
 		ChatFrame1:AddMessage(BLUE.."[Rinse]|r "..L["Buttons are hidden, to access option and lists use /rinse options, /rinse skip or /rinse prio."])
 	end
+	ApplyLock()
 end
 
 function Rinse_ToggleHeader()
@@ -1181,8 +1198,6 @@ function RinseFrame_OnEvent()
 		RinseFrame:SetScale(RINSE_CONFIG.SCALE)
 		RinseDebuffsFrame:SetScale(RINSE_CONFIG.SCALE)
 		RinseFrame:SetAlpha(RINSE_CONFIG.OPACITY)
-		RinseFrame:SetMovable(not RINSE_CONFIG.LOCK)
-		RinseFrame:EnableMouse(not RINSE_CONFIG.LOCK)
 		RinseOptionsFrameScaleSlider:SetValue(RINSE_CONFIG.SCALE)
 		RinseOptionsFrameOpacitySlider:SetValue(RINSE_CONFIG.OPACITY)
 		RinseOptionsFrameIgnoreAbolish:SetChecked(RINSE_CONFIG.IGNORE_ABOLISH)
@@ -1191,7 +1206,6 @@ function RinseFrame_OnEvent()
 		RinseOptionsFramePrint:SetChecked(RINSE_CONFIG.PRINT)
 		RinseOptionsFrameMSBT:SetChecked(RINSE_CONFIG.MSBT)
 		RinseOptionsFrameSound:SetChecked(RINSE_CONFIG.SOUND)
-		RinseOptionsFrameLock:SetChecked(RINSE_CONFIG.LOCK)
 		RinseOptionsFrameBackdrop:SetChecked(RINSE_CONFIG.BACKDROP)
 		RinseOptionsFrameShowHeader:SetChecked(RINSE_CONFIG.SHOW_HEADER)
 		RinseOptionsFrameFlip:SetChecked(RINSE_CONFIG.FLIP)
