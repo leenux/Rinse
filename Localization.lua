@@ -1,13 +1,14 @@
 Rinse = {}
 Rinse.L = {
-    -- Dispel types
-    ["Snare"] = 1, -- not a real type
+    ["Run Rinse"] = 1,
+    ["Toggle Options"] = 1,
+    ["Toggle Prio List"] = 1,
+    ["Toggle Skip List"] = 1,
+    ["Snare"] = 1,
     ["Magic"] = 1,
     ["Curse"] = 1,
     ["Disease"] = 1,
     ["Poison"] = 1,
-
-    -- Player dispel abilities
     ["Cleanse"] = 1,
     ["Purify"] = 1,
     ["Hand of Freedom"] = 1,
@@ -17,10 +18,9 @@ Rinse.L = {
     ["Abolish Disease"] = 1,
     ["Remove Lesser Curse"] = 1,
     ["Devour Magic"] = 1,
+    ["Nature's Reach"] = 1,
     ["Cure Disease"] = 1,
     ["Cure Poison"] = 1,
-
-    -- Debuff names
     ["Curse of Recklessness"] = 1,
     ["Delusions of Jin'do"] = 1,
     ["Dread of Outland"] = 1,
@@ -51,14 +51,27 @@ Rinse.L = {
     ["Slip'kik's Savvy"] = 1,
     ["Thunderfury"] = 1,
     ["Magma Shackles"] = 1,
+    ["Thunderclap"] = 1,
     ["Silence"] = 1,
     ["Ancient Hysteria"] = 1,
     ["Ignite Mana"] = 1,
     ["Tainted Mind"] = 1,
     ["Smoke Bomb"] = 1,
     ["Screams of the Past"] = 1,
+    ["Sonic Burst"] = 1,
     ["Moroes Curse"] = 1,
     ["Curse of Manascale"] = 1,
+    ["Mana Burn"] = 1,
+    ["Emerald Rot"] = 1,
+    ["Impending Doom"] = 1,
+    ["Brood Affliction: Blue"] = 1,
+    ["Brood Affliction: Red"] = 1,
+    ["Decrepit Fever"] = 1,
+    ["Twisted Reflection"] = 1,
+    ["True Fulfillment"] = 1,
+    ["Plague"] = 1,
+    ["Enveloping Winds"] = 1,
+    ["Hex"] = 1,
     ["Rift Entanglement"] = 1,
     ["Hamstring"] = 1,
     ["Wing Clip"] = 1,
@@ -69,12 +82,6 @@ Rinse.L = {
     ["Encasing Webs"] = 1,
     ["Surge of Mana"] = 1,
     ["Hooked Net"] = 1,
-
-    -- UI
-    ["Run Rinse"] = 1,
-    ["Toggle Options"] = 1,
-    ["Toggle Prio List"] = 1,
-    ["Toggle Skip List"] = 1,
     ["Warriors"] = 1,
     ["Druids"] = 1,
     ["Paladins"] = 1,
@@ -150,10 +157,6 @@ Rinse.L = {
 
 local locale = GetLocale()
 if locale == "zhCN" then
-    Rinse.L["Magic"] = "魔法"
-    Rinse.L["Curse"] = "诅咒"
-    Rinse.L["Disease"] = "疾病"
-    Rinse.L["Poison"] = "中毒"
     -- Player dispel abilities
     Rinse.L["Cleanse"] = "清洁术"
     Rinse.L["Purify"] = "纯净术"
@@ -166,6 +169,7 @@ if locale == "zhCN" then
     Rinse.L["Cure Disease"] = "祛病术"
     Rinse.L["Remove Lesser Curse"] = "解除次级诅咒"
     Rinse.L["Devour Magic"] = "吞噬魔法"
+    Rinse.L["Nature's Reach"] = "自然延伸"
     -- DefaultBlacklist
     Rinse.L["Curse of Recklessness"] = "鲁莽诅咒"
     Rinse.L["Delusions of Jin'do"] = "金度的欺骗"
@@ -199,6 +203,7 @@ if locale == "zhCN" then
     Rinse.L["Slip'kik's Savvy"] = "斯里基克的机智"
     Rinse.L["Thunderfury"] = "雷霆之怒"
     Rinse.L["Magma Shackles"] = "熔岩镣铐"
+    Rinse.L["Thunderclap"] = "雷霆一击"
     -- ClassFilter
     Rinse.L["Silence"] = "沉默"
     Rinse.L["Ancient Hysteria"] = "上古狂乱"
@@ -214,6 +219,10 @@ if locale == "zhCN" then
     Rinse.L["Wing Clip"] = "摔绊"
     Rinse.L["Mind Flay"] = "精神鞭笞"
     Rinse.L["Web"] = "蛛网"
+    Rinse.L["Enveloping Web"] = "包围之网"
+    Rinse.L["Encasing Webs"] = "裹体之网"
+    Rinse.L["Web Explosion"] = "蛛网爆炸"
+    Rinse.L["Hooked Net"] = "钩网"
     Rinse.L["Surge of Mana"] = "法力涌动"
 elseif locale == "esES" then
     Rinse.L["Magic"] = "Mágico"
